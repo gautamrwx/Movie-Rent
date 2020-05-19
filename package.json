@@ -18,6 +18,7 @@
   "homepage": "https://github.com/gautam0x/Vidly#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "joi": "^14.3.1"
+    "joi": "^14.3.1",
+    "mongoose": "^5.9.15"
   }
 }
