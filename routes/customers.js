@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { Customer,validate } = require('../models/customer'); // Import Mongoose Class And Schema
+const authenticate = require('../middleware/authenticate');
+const adminAuth = require('../middleware/adminAuth');
 
 // Read Customer
 router.get('/',async (req,res) => {
@@ -16,7 +18,7 @@ router.get('/:id',async (req,res) => {
 })
 
 // Create Customer
-router.post('/',async (req,res) => {
+router.post('/',authenticate,async (req,res) => {
     const { error } = validate(req.body);
     if(error) return res.send(error.details[0].message);
 
@@ -31,7 +33,7 @@ router.post('/',async (req,res) => {
 })
 
 // Update Customer
-router.put('/:id',async (req,res) => {
+router.put('/:id',authenticate,async (req,res) => {
     const {error} = validate(req.body);
     if(error) return res.send(error.details[0].message);
 
@@ -48,7 +50,7 @@ router.put('/:id',async (req,res) => {
 })
 
 // Delete Customer
-router.delete('/:id',async (req,res) => {
+router.delete('/:id',[authenticate,adminAuth],async (req,res) => {
     const customer = await Customer.findByIdAndRemove(req.params.id);
     if(!customer) return res.send("Not Found");
 

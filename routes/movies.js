@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { Movie,validate } = require('../models/movie'); // Import Mongoose Class And Schema
 const { Genre } = require('../models/genre');
+const authenticate = require('../middleware/authenticate');
+const adminAuth = require('../middleware/adminAuth');
 
 // Read Movie
 router.get('/',async (req,res) => {
@@ -17,7 +19,7 @@ router.get('/:id',async (req,res) => {
 })
 
 // Create Movie
-router.post('/',async (req,res) => {
+router.post('/',authenticate,async (req,res) => {
     const { error } = validate(req.body);
     if(error) return res.send(error.details[0].message);
 
@@ -36,7 +38,7 @@ router.post('/',async (req,res) => {
 })
 
 //Update Movie
-router.put('/:id',async (req,res) => {
+router.put('/:id',authenticate,async (req,res) => {
     const { error } = validate(req.body);
     if(error) return res.send(error.details[0].message);
 
@@ -55,7 +57,7 @@ router.put('/:id',async (req,res) => {
 })
 
 //Delete Movie
-router.delete('/:id',async (req,res) => {
+router.delete('/:id',[authenticate,adminAuth],async (req,res) => {
     const movie = await Movie.findByIdAndRemove(req.params.id);
     if (!movie) return res.send('Movie Not Found .. ');
 

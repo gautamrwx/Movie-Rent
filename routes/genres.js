@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { Genre,validate } = require('../models/genre'); // Import Mongoose Class And Schema
+const authenticate = require('../middleware/authenticate');
+const adminAuth = require('../middleware/adminAuth');
 
 // Read Resource
 router.get('/',async (req,res) => {
@@ -16,7 +18,7 @@ router.get('/:id',async (req,res) => {
 })
 
 // Create Resource
-router.post('/',async (req,res) => {
+router.post('/',authenticate,async (req,res) => {
     const {error} = validate(req.body);
     if(error) return res.send(error.details[0].message);
 
@@ -26,7 +28,7 @@ router.post('/',async (req,res) => {
 })
 
 // Update Resource
-router.put('/:id',async (req,res) => {
+router.put('/:id',authenticate,async (req,res) => {
     const {error} = validate(req.body);
     if(error) return res.send(error.details[0].message);
 
@@ -38,7 +40,7 @@ router.put('/:id',async (req,res) => {
 })
 
 // Delete Resource
-router.delete('/:id',async (req,res) => {
+router.delete('/:id',[authenticate,adminAuth],async (req,res) => {
     const genre = await Genre.findByIdAndRemove(req.params.id);
     if(!genre) return res.send("Not Found");
 
